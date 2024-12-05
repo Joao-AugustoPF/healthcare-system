@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: healthcare_system
+      MYSQL_USER: healthcare_user
+      MYSQL_PASSWORD: healthcare_password
+    ports:
+      - "3307:3306" # Porta de exposição do MySQL
+    volumes:
+      - mysql_data:/var/lib/mysql # Persistência de dados
+
+  app:
+    build:
+      context: . # Diretório onde está o Dockerfile
+    container_name: healthcare_app
+    ports:
+      - "8080:8080" # Porta de exposição da aplicação
+    depends_on:
+      - mysql # Garante que o MySQL será iniciado antes da aplicação
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3307/healthcare_system
+      SPRING_DATASOURCE_USERNAME: healthcare_user
+      SPRING_DATASOURCE_PASSWORD: healthcare_password
+
+volumes:
+  mysql_data:
